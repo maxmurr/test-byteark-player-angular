@@ -1,4 +1,4 @@
-# byteark-player-angular-demo
+# ByteArk Player Container for Angular
 
 ## Getting Started
 
