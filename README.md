@@ -5,7 +5,7 @@
 1. **Clone the project:**
 
    ```sh
-   git clone https://github.com/your-username/byteark-player-angular-demo.git
+   git clone git@github.com:maxmurr/byteark-player-angular-demo.git
    cd byteark-player-angular-demo
    ```
 
