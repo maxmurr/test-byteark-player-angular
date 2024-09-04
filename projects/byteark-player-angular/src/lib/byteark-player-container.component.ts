@@ -7,7 +7,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {
+import type {
   ByteArkPlayer,
   ByteArkPlayerContainerProps,
   ByteArkPlayerContainerState,
@@ -39,7 +39,7 @@ import {
   LoadPlayerResourceError,
   SetupPlayerOptionsError,
 } from '../utils/error';
-import { PlayerPlaceholderComponent } from './player-placeholder';
+import { PlayerPlaceholderComponent } from './player-placeholder.component';
 
 window.bytearkPlayer = window.bytearkPlayer || {};
 

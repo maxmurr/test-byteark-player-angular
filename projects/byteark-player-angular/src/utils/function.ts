@@ -1,8 +1,4 @@
-import {
-  CreatePlaceholderFunction,
-  CreatePlayerFunction,
-  SetupPlayerFunction,
-} from '../types';
+import { CreatePlayerFunction, SetupPlayerFunction } from '../types';
 
 export const defaultCreatePlayerFunction: CreatePlayerFunction = (
   node,

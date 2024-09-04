@@ -1,7 +1,7 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { ByteArkPlayerContainerError } from '../utils/error';
-import { ByteArkPlayerContainerProps } from '../types';
-import { PlayerLoadErrorMessageComponent } from './player-load-error-message';
+import { Component, Input, OnChanges } from '@angular/core';
+import { type ByteArkPlayerContainerError } from '../utils/error';
+import { type ByteArkPlayerContainerProps } from '../types';
+import { PlayerLoadErrorMessageComponent } from './player-load-error-message.component';
 
 function getPlaceholderPaddingTopFromAspectRatio(aspectRatio: unknown): number {
   if (typeof aspectRatio === 'number') {
