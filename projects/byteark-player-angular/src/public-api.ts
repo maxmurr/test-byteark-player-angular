@@ -3,4 +3,4 @@
  */
 
 export * from './lib/byteark-player-container.component';
-export * from './lib/types';
+export * from './types';

@@ -54,10 +54,7 @@
                 "input": "projects/example/public"
               }
             ],
-            "styles": [
-              "projects/example/src/styles.css",
-              "node_modules/video.js/dist/video-js.css"
-            ],
+            "styles": ["projects/example/src/styles.css"],
             "scripts": []
           },
           "configurations": {
