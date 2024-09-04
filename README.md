@@ -101,24 +101,7 @@ To use the ByteArk Player Container in your Angular application, follow these st
 
 ### Customization
 
-You can customize the player by passing different options to the `ByteArkPlayerContainer` component. Here are some of the available options:
-
-- `fluid`: Boolean to enable fluid layout.
-- `autoplay`: Boolean to enable autoplay.
-- `aspectRatio`: String to set the aspect ratio (e.g., '16:9').
-- `poster`: URL of the poster image.
-- `sources`: Array of video sources.
-
-For a full list of options, refer to the `ByteArkPlayerContainerProps` interface in the codebase.
-
-### Error Handling
-
-The ByteArk Player Container provides several hooks for error handling:
-
-- `onPlayerLoadError`
-- `onPlayerSetupError`
-
-You can use these hooks to handle errors gracefully in your application.
+Writting information about customizations and configurations of the player soon.
 
 ### Example
 
