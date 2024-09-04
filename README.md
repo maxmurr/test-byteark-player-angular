@@ -55,23 +55,48 @@ To use the ByteArk Player Container in your Angular application, follow these st
 
 1. **Import the ByteArk Player Container component:**
 
-   ```typescript:projects/example/src/app/sample-blog/sample-blog.component.ts
-   startLine: 1
-   endLine: 14
+   ```typescript
+   import { Component } from "@angular/core";
+   import { ByteArkPlayerContainer, type ByteArkPlayerContainerProps } from "byteark-player-angular";
+   import { videos } from "../videos";
+   import { SiteHeaderComponent } from "../../components/site-header.component";
+
+   @Component({
+     selector: "app-sample-blog",
+     standalone: true,
+     imports: [SiteHeaderComponent, ByteArkPlayerContainer],
+     templateUrl: "./sample-blog.component.html",
+   })
+   export class SampleBlogComponent {
+     title = "ByteArk Player Container | Sample Blog";
+   }
    ```
 
 2. **Add the component to your template:**
 
-   ```html:projects/example/src/app/sample-blog/sample-blog.component.html
-   startLine: 1
-   endLine: 21
+   ```html
+   <app-site-header></app-site-header> <byteark-player-container [options]="options"></byteark-player-container>
    ```
 
 3. **Configure the player options:**
 
-   ```typescript:projects/example/src/app/sample-blog/sample-blog.component.ts
-   startLine: 15
-   endLine: 30
+   ```typescript
+   export class SampleBlogComponent {
+     title = "ByteArk Player Container | Sample Blog";
+     options: ByteArkPlayerContainerProps = {
+       fluid: true,
+       autoplay: false,
+       aspectRatio: "16:9",
+       poster: videos[0].poster,
+       sources: [
+         {
+           src: videos[0].src,
+           type: videos[0].type,
+           title: videos[0].title,
+         },
+       ],
+     };
+   }
    ```
 
 ### Customization
@@ -128,7 +153,3 @@ export class SampleBlogComponent {
   };
 }
 ```
-
-### Contributing
-
-We welcome contributions! Please read our [contributing guidelines](CON
