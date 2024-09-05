@@ -17,10 +17,22 @@
       ratio to 16:9.
     </p>
     <div class="player-container mt-4 mb-4" style="position: relative">
-      <byteark-player-container [options]="options"></byteark-player-container>
+      <byteark-player-container
+        [options]="options"
+        [placeholderTemplate]="
+          playerContainerState.showPlaceholder ? placeholderTemplate : null
+        "
+      ></byteark-player-container>
+      <ng-template #placeholderTemplate>
+        <custom-placeholder
+          [playerProps]="options"
+          [state]="playerContainerState"
+          (onClickPlaceholder)="onClickPlaceholder()"
+        />
+      </ng-template>
     </div>
   </section>
-  <!-- <section class="mt-4 mb-4">
+  <section class="mt-4 mb-4">
     <h2 class="text-xl">More Examples</h2>
     <ul class="list-disc list-inside px-4 py-2">
       <li>
@@ -42,5 +54,5 @@
         <a routerLink="/ads">Advertisement</a>
       </li>
     </ul>
-  </section> -->
+  </section>
 </div>

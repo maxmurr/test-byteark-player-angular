@@ -1,6 +1,6 @@
 import videojs from 'video.js';
 import { ByteArkPlayerContainerError } from './utils/error';
-import { type ElementRef } from '@angular/core';
+import { TemplateRef, type ElementRef } from '@angular/core';
 
 declare global {
   interface Window {
@@ -264,7 +264,6 @@ export interface ByteArkStoryboardPluginOptions {
 
 export interface ByteArkPlayerContainerProps extends ByteArkPlayerOptions {
   className?: string;
-  createPlaceholderFunction?: CreatePlaceholderFunction;
   createPlayerFunction?: CreatePlayerFunction;
   lazyload?: boolean;
   onPlayerCreated?: OnPlayerCreatedFunction;
@@ -289,11 +288,11 @@ export interface ByteArkPlayerContainerState {
   showPlaceholder: boolean;
 }
 
-export type CreatePlaceholderFunction = (
-  props: ByteArkPlayerContainerProps,
-  steate: Pick<ByteArkPlayerContainerState, 'error' | 'loaded'>,
-  onClickPlaceholder: () => void
-) => ElementRef;
+export type PlaceholderProps = {
+  props: ByteArkPlayerContainerProps;
+  state: Pick<ByteArkPlayerContainerState, 'error' | 'loaded'>;
+  onClickPlaceholder: () => void;
+};
 
 export type CreatePlayerFunction = (
   node: HTMLMediaElement,

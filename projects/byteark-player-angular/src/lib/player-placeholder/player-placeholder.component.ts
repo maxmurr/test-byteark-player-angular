@@ -1,7 +1,16 @@
-import { Component, Input, OnChanges } from '@angular/core';
-import { type ByteArkPlayerContainerError } from '../utils/error';
-import { type ByteArkPlayerContainerProps } from '../types';
-import { PlayerLoadErrorMessageComponent } from './player-load-error-message.component';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+} from '@angular/core';
+import { PlayerLoadErrorMessageComponent } from '../player-load-error-message/player-load-error-message.component';
+import {
+  type ByteArkPlayerContainerState,
+  type ByteArkPlayerContainerProps,
+} from '../../types';
+import { CommonModule } from '@angular/common';
 
 function getPlaceholderPaddingTopFromAspectRatio(aspectRatio: unknown): number {
   if (typeof aspectRatio === 'number') {
@@ -24,41 +33,14 @@ function getPlaceholderPaddingTopFromAspectRatio(aspectRatio: unknown): number {
 @Component({
   selector: 'player-placeholder',
   standalone: true,
-  imports: [PlayerLoadErrorMessageComponent],
-  template: `
-    @if(this.error) {
-    <div [class]="this.className" [style]="this.placeholderCustomStyle">
-      <player-load-error-message
-        [error]="this.error"
-      ></player-load-error-message>
-    </div>
-    } @else {
-    <div
-      (onClick)="onClick()"
-      [class]="this.className"
-      [style]="this.placeholderCustomStyle"
-    >
-      @if(this.shouldShowPlayIcon) {
-      <svg [style]="this.playIconStyle" viewBox="0 0 56 56">
-        <path
-          [style]="this.pathStyle"
-          d="M47.43,27.26,14.11,5.87A3.34,3.34,0,0,0,9,8.79V51.56a3.34,3.34,0,0,0,5.11,2.91L47.43,33.09A3.49,3.49,0,0,0,47.43,27.26Z"
-        />
-      </svg>
-      }
-    </div>
-    }
-  `,
+  imports: [CommonModule, PlayerLoadErrorMessageComponent],
+  templateUrl: './player-placeholder.component.html',
 })
 export class PlayerPlaceholderComponent implements OnChanges {
-  @Input() aspectRatio: string | undefined;
-  @Input() onClick!: () => void;
-  @Input() className: string | undefined;
-  @Input() error: ByteArkPlayerContainerError | null = null;
-  @Input() loaded!: boolean;
   @Input() playerProps!: ByteArkPlayerContainerProps;
+  @Input() state!: Pick<ByteArkPlayerContainerState, 'error' | 'loaded'>;
+  @Output() onClickPlaceholder = new EventEmitter();
 
-  private _options = this.playerProps;
   private _placeholderCustomStyle: Record<string, string> = {
     position: 'relative',
     width: '100%',
@@ -87,12 +69,6 @@ export class PlayerPlaceholderComponent implements OnChanges {
     transform: 'translateX(13px) translateY(9px) scale(0.7)',
   };
 
-  get options() {
-    return this._options;
-  }
-  set options(options: ByteArkPlayerContainerProps) {
-    this._options = options;
-  }
   get placeholderCustomStyle() {
     return this._placeholderCustomStyle;
   }
@@ -111,33 +87,57 @@ export class PlayerPlaceholderComponent implements OnChanges {
   set pathStyle(style: Record<string, string>) {
     this._pathStyle = style;
   }
+  get error() {
+    return this.state.error;
+  }
+  get loaded() {
+    return this.state.loaded;
+  }
+  get aspectRatio() {
+    return this.playerProps?.aspectRatio;
+  }
+  get fluid() {
+    return this.playerProps?.fluid;
+  }
+  get fill() {
+    return this.playerProps?.fill;
+  }
+  get lazyload() {
+    return this.playerProps?.lazyload;
+  }
+  get poster() {
+    return this.playerProps?.poster;
+  }
+  get className() {
+    return this.playerProps?.className;
+  }
 
   ngOnChanges(): void {
-    if (this.options.fluid) {
+    if (this.fluid) {
       this.placeholderCustomStyle[
         'paddingTop'
       ] = `${getPlaceholderPaddingTopFromAspectRatio(
         this.aspectRatio || '16:9'
       )}%`;
     }
-    if (!this.options.fluid && this.options.fill) {
+    if (!this.fluid && this.fill) {
       this.placeholderCustomStyle['height'] = '100%';
       this.placeholderCustomStyle['minHeight'] = '100%';
     }
 
-    if (this.options.lazyload && !this.loaded) {
+    if (this.lazyload && !this.loaded) {
       this.placeholderCustomStyle['position'] = 'relative';
     }
-    if (this.options.lazyload && this.loaded) {
+    if (this.lazyload && this.loaded) {
       this.placeholderCustomStyle['position'] = 'absolute';
     }
 
     if (!this.error) {
       // set placeholder poster image
-      if (this.options.poster) {
+      if (this.poster) {
         this.placeholderCustomStyle[
           'backgroundImage'
-        ] = `url(${this.options.poster})`;
+        ] = `url(${this.playerProps?.poster})`;
       }
 
       this.placeholderCustomStyle['cursor'] = 'pointer';
@@ -145,7 +145,7 @@ export class PlayerPlaceholderComponent implements OnChanges {
   }
 
   shouldShowPlayIcon =
-    this.options.controls === undefined ||
-    this.options.controls === null ||
-    this.options.controls === true;
+    this.playerProps?.controls === undefined ||
+    this.playerProps?.controls === null ||
+    this.playerProps?.controls === true;
 }

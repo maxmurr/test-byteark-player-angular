@@ -1,88 +1,64 @@
 import {
   Component,
   ElementRef,
+  Inject,
   Input,
   OnDestroy,
   OnInit,
+  PLATFORM_ID,
+  TemplateRef,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
+import {
+  CommonModule,
+  isPlatformBrowser,
+  isPlatformServer,
+} from '@angular/common';
 import type {
   ByteArkPlayer,
   ByteArkPlayerContainerProps,
   ByteArkPlayerContainerState,
   ByteArkPlayerError,
-  // CreatePlaceholderFunction,
   CreatePlayerFunction,
+  PlaceholderProps,
   SetupPlayerFunction,
-} from '../types';
+} from '../../types';
 import {
   createPlayerInstance,
   loadPlayerResources,
   setupPlayer,
   setupPlayerOptions,
-} from '../utils/player';
+} from '../../utils/player';
 import {
   defaultCreatePlayerFunction,
   defaultSetupPlayerFunction,
-} from '../utils/function';
+} from '../../utils/function';
 import {
   PLAYER_CSS_FILENAME,
   PLAYER_ENDPOINT,
   PLAYER_JS_FILENAME,
   PLAYER_SERVER_ENDPOINT,
   PLAYER_VERSION,
-} from '../constants';
-import { checkIfCanUseDOM } from '../utils/dom';
+} from '../../constants';
 import {
   ByteArkPlayerContainerError,
   LoadPlayerResourceError,
   SetupPlayerOptionsError,
-} from '../utils/error';
-import { PlayerPlaceholderComponent } from './player-placeholder.component';
-
-window.bytearkPlayer = window.bytearkPlayer || {};
+} from '../../utils/error';
+import { PlayerPlaceholderComponent } from '../player-placeholder/player-placeholder.component';
 
 @Component({
   selector: 'byteark-player-container',
   standalone: true,
-  imports: [PlayerPlaceholderComponent],
-  template: `
-    <div style="position: relative; height: 100%;">
-      @if (playerContainerState.showPlaceholder) {
-      <player-placeholder
-        [aspectRatio]="options.aspectRatio"
-        (onClick)="onClickPlaceholder()"
-        [className]="options.className"
-        [error]="playerContainerState.error"
-        [loaded]="playerContainerState.loaded"
-        [playerProps]="options"
-      ></player-placeholder>
-      } @if (playerContainerState.error === null) {
-      <div
-        [style.display]="
-          playerContainerState.showPlaceholder ? 'none' : 'initial'
-        "
-      >
-        @if (this.options.audioOnlyMode) {
-        <audio #target class="video-js" [class]="videoClasses"></audio>
-        } @else {
-        <video
-          #target
-          playsinline
-          class="video-js"
-          [class]="videoClasses"
-        ></video>
-        }
-      </div>
-      }
-    </div>
-  `,
+  imports: [CommonModule, PlayerPlaceholderComponent],
+  templateUrl: './byteark-player-container.component.html',
   styles: ``,
   encapsulation: ViewEncapsulation.None,
 })
 export class ByteArkPlayerContainer implements OnInit, OnDestroy {
-  @ViewChild('target') target!: ElementRef<HTMLVideoElement | HTMLAudioElement>;
+  @ViewChild('mediaRef') mediaRef: ElementRef<HTMLMediaElement | null> =
+    new ElementRef<HTMLMediaElement | null>(null);
 
   @Input() options!: ByteArkPlayerContainerProps;
   @Input() lazyLoad: boolean = false;
@@ -95,6 +71,7 @@ export class ByteArkPlayerContainer implements OnInit, OnDestroy {
     defaultCreatePlayerFunction;
   @Input() setupPlayerFunction: SetupPlayerFunction =
     defaultSetupPlayerFunction;
+  @Input() placeholderTemplate: TemplateRef<PlaceholderProps> | null = null;
 
   private _player: ByteArkPlayer | null = null;
   private _initializeInProgress: boolean = false;
@@ -105,6 +82,13 @@ export class ByteArkPlayerContainer implements OnInit, OnDestroy {
     showPlaceholder: true,
   };
   private _videoClasses: string[] = [];
+  isBrowser: boolean;
+  isServer: boolean;
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+    this.isServer = isPlatformServer(this.platformId);
+  }
 
   get player(): ByteArkPlayer | null {
     return this._player;
@@ -160,10 +144,6 @@ export class ByteArkPlayerContainer implements OnInit, OnDestroy {
   }
 
   onPlayerCreated() {
-    this.playerContainerState = {
-      ...this.playerContainerState,
-      showPlaceholder: false,
-    };
     if (this.player) this.options.onPlayerCreated?.(this.player);
   }
 
@@ -195,7 +175,7 @@ export class ByteArkPlayerContainer implements OnInit, OnDestroy {
   }
 
   async initializePlayer() {
-    if (!checkIfCanUseDOM() || this.initializeInProgress) return;
+    if (!this.isBrowser || this.initializeInProgress) return;
 
     this.initializeInProgress = true;
     try {
@@ -214,13 +194,20 @@ export class ByteArkPlayerContainer implements OnInit, OnDestroy {
       this.onPlayerSetup();
 
       this.player = await createPlayerInstance(
-        this.target.nativeElement,
+        this.mediaRef.nativeElement,
         options,
         this.createPlayerFunction,
         this.onPlayerReady
       );
 
       this.onPlayerCreated();
+
+      this.player?.on('play', () => {
+        this.playerContainerState = {
+          ...this.playerContainerState,
+          showPlaceholder: false,
+        };
+      });
     } catch (error) {
       if (error instanceof LoadPlayerResourceError) {
         this.onPlayerSetupError(error, error.originalError);
@@ -236,15 +223,21 @@ export class ByteArkPlayerContainer implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    if (!this.lazyLoad) await this.initializePlayer();
+    if (this.isBrowser && !this.lazyLoad) await this.initializePlayer();
+  }
+
+  ngOnChanges() {
+    this.renderPlayer();
   }
 
   ngOnDestroy() {
-    this.player?.dispose();
-    this.player = null;
-    this.playerContainerState = {
-      ...this.playerContainerState,
-      ready: false,
-    };
+    if (this.player) {
+      this.player?.dispose();
+      this.player = null;
+      this.playerContainerState = {
+        ...this.playerContainerState,
+        ready: false,
+      };
+    }
   }
 }

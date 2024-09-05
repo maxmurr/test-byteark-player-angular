@@ -33,29 +33,34 @@
         }
       }
     },
-    "example": {
+    "sample": {
       "projectType": "application",
       "schematics": {},
-      "root": "projects/example",
-      "sourceRoot": "projects/example/src",
+      "root": "projects/sample",
+      "sourceRoot": "projects/sample/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/example",
-            "index": "projects/example/src/index.html",
-            "browser": "projects/example/src/main.ts",
+            "outputPath": "dist/sample",
+            "index": "projects/sample/src/index.html",
+            "browser": "projects/sample/src/main.ts",
             "polyfills": ["zone.js"],
-            "tsConfig": "projects/example/tsconfig.app.json",
+            "tsConfig": "projects/sample/tsconfig.app.json",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "projects/example/public"
+                "input": "projects/sample/public"
               }
             ],
-            "styles": ["projects/example/src/styles.css"],
-            "scripts": []
+            "styles": ["projects/sample/src/styles.css"],
+            "scripts": [],
+            "server": "projects/sample/src/main.server.ts",
+            "prerender": true,
+            "ssr": {
+              "entry": "projects/sample/server.ts"
+            }
           },
           "configurations": {
             "production": {
@@ -85,10 +90,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "example:build:production"
+              "buildTarget": "sample:build:production"
             },
             "development": {
-              "buildTarget": "example:build:development"
+              "buildTarget": "sample:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -100,14 +105,14 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "polyfills": ["zone.js", "zone.js/testing"],
-            "tsConfig": "projects/example/tsconfig.spec.json",
+            "tsConfig": "projects/sample/tsconfig.spec.json",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "projects/example/public"
+                "input": "projects/sample/public"
               }
             ],
-            "styles": ["projects/example/src/styles.css"],
+            "styles": ["projects/sample/src/styles.css"],
             "scripts": []
           }
         }
