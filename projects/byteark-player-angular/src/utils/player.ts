@@ -12,7 +12,7 @@ import {
   CreatePlayerFunction,
   SetupPlayerFunction,
 } from '../types';
-import { loadScriptOrStyle } from './loadScriptOrStyle';
+import { loadScriptOrStyle } from './load-script-or-style';
 
 type LoadPlayerResourceConfig = Pick<
   ByteArkPlayerContainerProps,

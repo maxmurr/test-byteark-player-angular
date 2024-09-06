@@ -1,15 +1,16 @@
 import {
   Component,
+  ElementRef,
   EventEmitter,
   Input,
-  OnChanges,
+  OnInit,
   Output,
 } from '@angular/core';
 import { PlayerLoadErrorMessageComponent } from '../player-load-error-message/player-load-error-message.component';
 import {
   type ByteArkPlayerContainerState,
   type ByteArkPlayerContainerProps,
-} from '../../types';
+} from '../../../types';
 import { CommonModule } from '@angular/common';
 
 function getPlaceholderPaddingTopFromAspectRatio(aspectRatio: unknown): number {
@@ -36,12 +37,13 @@ function getPlaceholderPaddingTopFromAspectRatio(aspectRatio: unknown): number {
   imports: [CommonModule, PlayerLoadErrorMessageComponent],
   templateUrl: './player-placeholder.component.html',
 })
-export class PlayerPlaceholderComponent implements OnChanges {
+export class PlayerPlaceholderComponent implements OnInit {
   @Input() playerProps!: ByteArkPlayerContainerProps;
   @Input() state!: Pick<ByteArkPlayerContainerState, 'error' | 'loaded'>;
+  @Input() template?: ElementRef<any>;
   @Output() onClickPlaceholder = new EventEmitter();
 
-  private _placeholderCustomStyle: Record<string, string> = {
+  placeholderCustomStyle: Record<string, string> = {
     position: 'relative',
     width: '100%',
     minWidth: '100%',
@@ -54,7 +56,7 @@ export class PlayerPlaceholderComponent implements OnChanges {
     height: '',
     minHeight: '',
   };
-  private _playIconStyle: Record<string, string> = {
+  playIconStyle: Record<string, string> = {
     position: 'absolute',
     width: '90px',
     top: '50%',
@@ -64,80 +66,38 @@ export class PlayerPlaceholderComponent implements OnChanges {
     background: 'rgba(0, 0, 0, 0.85)',
     borderRadius: '50%',
   };
-  private _pathStyle: Record<string, string> = {
+  pathStyle: Record<string, string> = {
     fill: '#ffffff',
     transform: 'translateX(13px) translateY(9px) scale(0.7)',
   };
 
-  get placeholderCustomStyle() {
-    return this._placeholderCustomStyle;
-  }
-  set placeholderCustomStyle(style: Record<string, string>) {
-    this._placeholderCustomStyle = style;
-  }
-  get playIconStyle() {
-    return this._playIconStyle;
-  }
-  set playIconStyle(style: Record<string, string>) {
-    this._playIconStyle = style;
-  }
-  get pathStyle() {
-    return this._pathStyle;
-  }
-  set pathStyle(style: Record<string, string>) {
-    this._pathStyle = style;
-  }
-  get error() {
-    return this.state.error;
-  }
-  get loaded() {
-    return this.state.loaded;
-  }
-  get aspectRatio() {
-    return this.playerProps?.aspectRatio;
-  }
-  get fluid() {
-    return this.playerProps?.fluid;
-  }
-  get fill() {
-    return this.playerProps?.fill;
-  }
-  get lazyload() {
-    return this.playerProps?.lazyload;
-  }
-  get poster() {
-    return this.playerProps?.poster;
-  }
-  get className() {
-    return this.playerProps?.className;
-  }
+  ngOnInit(): void {
+    console.log('playerProps', this.playerProps);
+    this.template = this.playerProps.placeholderTemplate;
 
-  ngOnChanges(): void {
-    if (this.fluid) {
+    const { fluid, aspectRatio, fill, lazyload, poster } = this.playerProps;
+    const { error, loaded } = this.state;
+
+    if (fluid) {
       this.placeholderCustomStyle[
         'paddingTop'
-      ] = `${getPlaceholderPaddingTopFromAspectRatio(
-        this.aspectRatio || '16:9'
-      )}%`;
+      ] = `${getPlaceholderPaddingTopFromAspectRatio(aspectRatio || '16:9')}%`;
     }
-    if (!this.fluid && this.fill) {
+    if (!fluid && fill) {
       this.placeholderCustomStyle['height'] = '100%';
       this.placeholderCustomStyle['minHeight'] = '100%';
     }
 
-    if (this.lazyload && !this.loaded) {
+    if (lazyload && !loaded) {
       this.placeholderCustomStyle['position'] = 'relative';
     }
-    if (this.lazyload && this.loaded) {
+    if (lazyload && loaded) {
       this.placeholderCustomStyle['position'] = 'absolute';
     }
 
-    if (!this.error) {
-      // set placeholder poster image
-      if (this.poster) {
-        this.placeholderCustomStyle[
-          'backgroundImage'
-        ] = `url(${this.playerProps?.poster})`;
+    if (!error) {
+      if (poster) {
+        this.placeholderCustomStyle['backgroundImage'] = `url(${poster})`;
       }
 
       this.placeholderCustomStyle['cursor'] = 'pointer';

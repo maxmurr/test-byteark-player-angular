@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {
   ByteArkPlayer,
   ByteArkPlayerContainer,
@@ -9,7 +9,6 @@ import {
 import { SiteHeaderComponent } from '../../components/site-header.component';
 import { videos } from '../videos';
 import { RouterLink } from '@angular/router';
-import { CustomPlaceholderComponent } from './custom-placeholder/custom-placeholder.component';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -20,7 +19,6 @@ import { CommonModule } from '@angular/common';
     RouterLink,
     SiteHeaderComponent,
     ByteArkPlayerContainer,
-    CustomPlaceholderComponent,
   ],
   templateUrl: './sample-blog.component.html',
 })
@@ -58,6 +56,33 @@ export class SampleBlogComponent {
       this.error = error;
       console.log('onPlayerLoadError', error, originalError);
     },
+  };
+  placeholderCustomStyle: Record<string, string> = {
+    position: 'relative',
+    width: '100%',
+    minWidth: '100%',
+    background: '#000000',
+    backgroundImage: 'none',
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    cursor: 'default',
+    paddingTop: '',
+    height: '',
+    minHeight: '',
+  };
+  playIconStyle: Record<string, string> = {
+    position: 'absolute',
+    width: '90px',
+    top: '50%',
+    left: '50%',
+    marginTop: '-2.75em',
+    marginLeft: '-2.75em',
+    background: 'rgba(0, 0, 0, 0.85)',
+    borderRadius: '50%',
+  };
+  pathStyle: Record<string, string> = {
+    fill: '#ffffff',
+    transform: 'translateX(13px) translateY(9px) scale(0.7)',
   };
 
   async onClickPlaceholder() {

@@ -6,47 +6,44 @@ import {
   OnDestroy,
   OnInit,
   PLATFORM_ID,
-  TemplateRef,
+  SimpleChanges,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {
-  CommonModule,
-  isPlatformBrowser,
-  isPlatformServer,
-} from '@angular/common';
+import { PreviousValueService } from '../../services/previous-value-service';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import type {
   ByteArkPlayer,
   ByteArkPlayerContainerProps,
   ByteArkPlayerContainerState,
   ByteArkPlayerError,
   CreatePlayerFunction,
-  PlaceholderProps,
   SetupPlayerFunction,
-} from '../../types';
+} from '../../../types';
 import {
   createPlayerInstance,
   loadPlayerResources,
   setupPlayer,
   setupPlayerOptions,
-} from '../../utils/player';
+} from '../../../utils/player';
 import {
   defaultCreatePlayerFunction,
   defaultSetupPlayerFunction,
-} from '../../utils/function';
+} from '../../../utils/function';
 import {
   PLAYER_CSS_FILENAME,
   PLAYER_ENDPOINT,
   PLAYER_JS_FILENAME,
   PLAYER_SERVER_ENDPOINT,
   PLAYER_VERSION,
-} from '../../constants';
+} from '../../../constants';
 import {
   ByteArkPlayerContainerError,
   LoadPlayerResourceError,
   SetupPlayerOptionsError,
-} from '../../utils/error';
+} from '../../../utils/error';
 import { PlayerPlaceholderComponent } from '../player-placeholder/player-placeholder.component';
+import { updatePlayerProps } from '../../../utils/update-player-props';
 
 @Component({
   selector: 'byteark-player-container',
@@ -71,51 +68,29 @@ export class ByteArkPlayerContainer implements OnInit, OnDestroy {
     defaultCreatePlayerFunction;
   @Input() setupPlayerFunction: SetupPlayerFunction =
     defaultSetupPlayerFunction;
-  @Input() placeholderTemplate: TemplateRef<PlaceholderProps> | null = null;
 
-  private _player: ByteArkPlayer | null = null;
-  private _initializeInProgress: boolean = false;
-  private _playerContainerState: ByteArkPlayerContainerState = {
+  player: ByteArkPlayer | null = null;
+  initializeInProgress: boolean = false;
+  playerContainerState: ByteArkPlayerContainerState = {
     loaded: false,
     ready: false,
     error: null,
     showPlaceholder: true,
   };
-  private _videoClasses: string[] = [];
+  videoClasses: string[] = [];
   isBrowser: boolean;
-  isServer: boolean;
+  previousProps?: ByteArkPlayerContainerProps;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private previousValueService: PreviousValueService<ByteArkPlayerContainerProps>
+  ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
-    this.isServer = isPlatformServer(this.platformId);
   }
 
-  get player(): ByteArkPlayer | null {
-    return this._player;
-  }
-  set player(player: ByteArkPlayer | null) {
-    this._player = player;
-  }
-
-  get initializeInProgress(): boolean {
-    return this._initializeInProgress;
-  }
-  set initializeInProgress(value: boolean) {
-    this._initializeInProgress = value;
-  }
-
-  get playerContainerState(): ByteArkPlayerContainerState {
-    return this._playerContainerState;
-  }
-  set playerContainerState(state: ByteArkPlayerContainerState) {
-    this._playerContainerState = state;
-  }
-
-  get videoClasses(): string[] {
-    return this._videoClasses;
-  }
-  set videoClasses(classes: string[]) {
-    this._videoClasses = classes;
+  usePrevious(value: ByteArkPlayerContainerProps) {
+    this.previousValueService.setValue(value);
+    this.previousProps = this.previousValueService.getPreviousValue();
   }
 
   onPlayerLoaded() {
@@ -155,15 +130,15 @@ export class ByteArkPlayerContainer implements OnInit, OnDestroy {
   async onClickPlaceholder() {
     if (this.lazyLoad) {
       await this.initializePlayer();
-      await this.player?.play();
     }
+    await this.player?.play();
     this.playerContainerState = {
       ...this.playerContainerState,
       showPlaceholder: false,
     };
   }
 
-  renderPlayer() {
+  updateVideoClasses() {
     const videoClasses = [];
     if (this.options.className) videoClasses.push(this.options.className);
     if (this.options.fluid) {
@@ -224,10 +199,16 @@ export class ByteArkPlayerContainer implements OnInit, OnDestroy {
 
   async ngOnInit() {
     if (this.isBrowser && !this.lazyLoad) await this.initializePlayer();
+    this.updateVideoClasses();
   }
 
-  ngOnChanges() {
-    this.renderPlayer();
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['options']) {
+      this.usePrevious(this.options);
+      if (this.player && this.options && this.previousProps) {
+        updatePlayerProps(this.player, this.options, this.previousProps);
+      }
+    }
   }
 
   ngOnDestroy() {
