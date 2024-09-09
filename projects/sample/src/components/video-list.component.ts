@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { type Video } from '../app/videos';
+import { type Video } from '../data/videos';
 import { VideoListItemComponent } from './video-list-item.component';
 
 @Component({
@@ -7,8 +7,8 @@ import { VideoListItemComponent } from './video-list-item.component';
   standalone: true,
   imports: [VideoListItemComponent],
   template: `
-    <div>
-      <h2 className="h6 mb-3">Recommended Videos</h2>
+    <div class="flex flex-col gap-3">
+      <h2 className="text-lg">Recommended Videos</h2>
       <ul className="list-unstyled">
         @for (video of videos; track video.videoId) {
         <video-list-item

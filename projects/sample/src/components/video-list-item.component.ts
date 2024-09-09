@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { type Video } from '../app/videos';
+import { type Video } from '../data/videos';
 
 @Component({
   selector: 'video-list-item',
@@ -7,9 +7,9 @@ import { type Video } from '../app/videos';
   imports: [],
   template: `
     <li>
-      <a class="media my-2" (click)="onVideoSelected()">
+      <a class="flex gap-3 my-2 cursor-pointer" (click)="onVideoSelected()">
         <img
-          class="rounded mr-3"
+          class="rounded"
           style="width: 100px"
           [src]="poster"
           [alt]="title"

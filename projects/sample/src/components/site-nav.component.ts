@@ -6,19 +6,23 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [RouterLink],
   template: `
-    <header class="navbar navbar-light bg-light">
-      <div class="container">
-        <a routerLink="/" class="navbar-brand">
-          ByteArk Player Container for React
+    <header class=" bg-gray-100">
+      <div
+        class="max-w-screen-lg mx-auto flex items-center justify-between py-4"
+      >
+        <a
+          routerLink="/"
+          class="text-xl font-medium text-black hover:no-underline hover:text-black"
+        >
+          ByteArk Player Container for Angular
         </a>
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a routerLink="/" class="nav-link">
-              <span class="mr-1">&#8592;</span>
-              <span>Back to Home</span>
-            </a>
-          </li>
-        </ul>
+        <a
+          routerLink="/"
+          class="text-gray-500 hover:text-gray-700 hover:no-underline"
+        >
+          <span class="mr-1">&#8592;</span>
+          <span>Back to Home</span>
+        </a>
       </div>
     </header>
   `,

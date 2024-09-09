@@ -59,12 +59,11 @@ To use the ByteArk Player Container in your Angular application, follow these st
    import { Component } from "@angular/core";
    import { ByteArkPlayerContainer, type ByteArkPlayerContainerProps } from "byteark-player-angular";
    import { videos } from "../videos";
-   import { SiteHeaderComponent } from "../../components/site-header.component";
 
    @Component({
      selector: "app-sample-blog",
      standalone: true,
-     imports: [SiteHeaderComponent, ByteArkPlayerContainer],
+     imports: [ByteArkPlayerContainer],
      templateUrl: "./sample-blog.component.html",
    })
    export class SampleBlogComponent {
@@ -75,7 +74,7 @@ To use the ByteArk Player Container in your Angular application, follow these st
 2. **Add the component to your template:**
 
    ```html
-   <app-site-header></app-site-header> <byteark-player-container [options]="options"></byteark-player-container>
+   <byteark-player-container [options]="options"></byteark-player-container>
    ```
 
 3. **Configure the player options:**
@@ -111,12 +110,11 @@ Here is a complete example of how to use the ByteArk Player Container in an Angu
 import { Component } from "@angular/core";
 import { ByteArkPlayerContainer, type ByteArkPlayerContainerProps } from "byteark-player-angular";
 import { videos } from "../videos";
-import { SiteHeaderComponent } from "../../components/site-header.component";
 
 @Component({
   selector: "app-sample-blog",
   standalone: true,
-  imports: [SiteHeaderComponent, ByteArkPlayerContainer],
+  imports: [ByteArkPlayerContainer],
   templateUrl: "./sample-blog.component.html",
 })
 export class SampleBlogComponent {
