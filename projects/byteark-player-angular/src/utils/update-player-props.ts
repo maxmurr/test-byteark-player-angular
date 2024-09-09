@@ -18,12 +18,12 @@ type PlayerPropName =
   | 'responsive'
   | 'sources';
 
-interface IPlayerProps {
+interface PlayerProps {
   name: PlayerPropName;
   setter?: 'src';
 }
 
-const playerProps: IPlayerProps[] = [
+const playerProps: PlayerProps[] = [
   {
     name: 'autoplay',
   },
@@ -84,7 +84,6 @@ export function updatePlayerProps(
   playerProps.forEach(({ name, setter }) => {
     const effectiveSetter: PlayerPropName = (setter || name) as PlayerPropName;
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const selectedPlayerProperty = player[effectiveSetter];
 

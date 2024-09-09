@@ -1,6 +1,6 @@
 import videojs from 'video.js';
 import { ByteArkPlayerContainerError } from './utils/error';
-import { TemplateRef, type ElementRef } from '@angular/core';
+import { type ElementRef } from '@angular/core';
 
 declare global {
   interface Window {
